@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Students</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+
 <body>
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center">
@@ -32,7 +34,9 @@
             <tbody>
                 {% for student in students %}
                 <tr>
-                    <td>{{ student.name|safe }}</td>
+                    <!-- CWE-79 FIX: Menghapus filter safe -->
+                    <!-- <td>{{ student.name|safe }}</td> -->
+                    <td>{{ student.name }}</td>
                     <td>{{ student.age }}</td>
                     <td>{{ student.grade }}</td>
                     <td>
@@ -45,4 +49,5 @@
         </table>
     </div>
 </body>
+
 </html>
