@@ -11,6 +11,7 @@
     <div class="container mt-5">
         <h1>Edit Student</h1>
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <!-- CWE-79 FIX: Menambahkan escape filter untuk atribut HTML -->
             <!-- <input type="text" name="name" value="{{ student.name }}" required> -->
             <!-- SECURE CODE: Menggunakan filter |e untuk escape atribut HTML -->

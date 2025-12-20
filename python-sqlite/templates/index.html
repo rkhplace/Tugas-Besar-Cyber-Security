@@ -17,6 +17,7 @@
             </div>
         </div>
         <form action="/add" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input type="text" name="name" placeholder="Name" required>
             <input type="number" name="age" placeholder="Age" required>
             <input type="text" name="grade" placeholder="Grade" required>
@@ -41,7 +42,10 @@
                     <td>{{ student.grade }}</td>
                     <td>
                         <a href="/edit/{{ student.id }}" class="btn btn-warning">Edit</a>
-                        <a href="/delete/{{ student.id }}" class="btn btn-danger">Delete</a>
+                        <form action="/delete/{{ student.id }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus?')">Delete</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

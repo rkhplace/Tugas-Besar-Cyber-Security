@@ -5,6 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import sqlite3
 
+from flask_wtf.csrf import CSRFProtect
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -12,6 +14,9 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///students.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.environ.get('APP_SECRET_KEY')
+app.config['WTF_CSRF_ENABLED'] = True
+app.config['WTF_CSRF_TIME_LIMIT'] = 3600  
+csrf = CSRFProtect(app)  
 ADMIN_USERNAME = os.environ.get('APP_ADMIN_USERNAME')
 ADMIN_PASSWORD = os.environ.get('APP_ADMIN_PASSWORD')
 db = SQLAlchemy(app)
@@ -84,7 +89,7 @@ def add_student():
     return redirect(url_for('index'))
 
 
-@app.route('/delete/<string:id>') 
+@app.route('/delete/<string:id>', methods=['POST'])  
 @login_required
 def delete_student(id):
     # RAW Query
