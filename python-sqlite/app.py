@@ -76,24 +76,29 @@ def add_student():
     connection = sqlite3.connect('instance/students.db')
     cursor = connection.cursor()
 
-    # RAW Query
-    # db.session.execute(
-    #     text("INSERT INTO student (name, age, grade) VALUES (:name, :age, :grade)"),
-    #     {'name': name, 'age': age, 'grade': grade}
-    # )
-    # db.session.commit()
-    query = f"INSERT INTO student (name, age, grade) VALUES ('{name}', {age}, '{grade}')"
-    cursor.execute(query)
-    connection.commit()
-    connection.close()
+    # RAW Query yang rentan SQL Injection
+    # query = f"INSERT INTO student (name, age, grade) VALUES ('{name}', {age}, '{grade}')"
+    # cursor.execute(query)
+    # connection.commit()
+    # connection.close()
+
+    # Perbaikan: Menggunakan Parameterized Query (SQLAlchemy style)
+    db.session.execute(
+        text("INSERT INTO student (name, age, grade) VALUES (:name, :age, :grade)"),
+        {'name': name, 'age': age, 'grade': grade}
+    )
+    db.session.commit()
     return redirect(url_for('index'))
 
 
-@app.route('/delete/<string:id>', methods=['POST'])  
+@app.route('/delete/<int:id>', methods=['POST'])  # Perbaikan: Menggunakan <int:id> untuk validasi tipe
 @login_required
 def delete_student(id):
-    # RAW Query
-    db.session.execute(text(f"DELETE FROM student WHERE id={id}"))
+    # RAW Query yang rentan SQL Injection
+    # db.session.execute(text(f"DELETE FROM student WHERE id={id}"))
+    
+    # Perbaikan: Menggunakan Parameterized Query
+    db.session.execute(text("DELETE FROM student WHERE id = :id"), {'id': id})
     db.session.commit()
     return redirect(url_for('index'))
 
@@ -106,13 +111,22 @@ def edit_student(id):
         age = request.form['age']
         grade = request.form['grade']
         
-        # RAW Query
-        db.session.execute(text(f"UPDATE student SET name='{name}', age={age}, grade='{grade}' WHERE id={id}"))
+        # RAW Query yang rentan SQL Injection
+        # db.session.execute(text(f"UPDATE student SET name='{name}', age={age}, grade='{grade}' WHERE id={id}"))
+        
+        # Perbaikan: Menggunakan Parameterized Query
+        db.session.execute(
+            text("UPDATE student SET name=:name, age=:age, grade=:grade WHERE id=:id"),
+            {'name': name, 'age': age, 'grade': grade, 'id': id}
+        )
         db.session.commit()
         return redirect(url_for('index'))
     else:
-        # RAW Query
-        student = db.session.execute(text(f"SELECT * FROM student WHERE id={id}")).fetchone()
+        # RAW Query yang rentan SQL Injection
+        # student = db.session.execute(text(f"SELECT * FROM student WHERE id={id}")).fetchone()
+        
+        # Perbaikan: Menggunakan Parameterized Query
+        student = db.session.execute(text("SELECT * FROM student WHERE id=:id"), {'id': id}).fetchone()
         return render_template('edit.html', student=student)
 
 # if __name__ == '__main__':
